@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.Json;
 using Xunit;
 
-namespace XUnit.Timeline.Tests
+namespace Ectobius.XUnit.Timeline.Tests
 {
     public class TimelineExporterTests : IDisposable
     {

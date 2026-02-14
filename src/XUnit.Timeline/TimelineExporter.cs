@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 
-namespace XUnit.Timeline
+namespace Ectobius.XUnit.Timeline
 {
     public static class TimelineExporter
     {

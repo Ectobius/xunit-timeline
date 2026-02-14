@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace XUnit.Timeline.Tests
+namespace Ectobius.XUnit.Timeline.Tests
 {
     [Collection("SharedCollector")]
     public class TimelineCollectorTests : IDisposable

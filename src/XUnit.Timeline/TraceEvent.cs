@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace XUnit.Timeline
+namespace Ectobius.XUnit.Timeline
 {
     public class TraceEvent
     {

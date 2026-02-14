@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace XUnit.Timeline.Tests
+namespace Ectobius.XUnit.Timeline.Tests
 {
     public class SampleTestsFixture : IDisposable
     {

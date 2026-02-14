@@ -1,4 +1,4 @@
-# XUnit.Timeline
+# Ectobius.XUnit.Timeline
 
 A .NET library that collects xUnit test execution data (thread, timing) and outputs it in [Chrome Trace Event Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview) for timeline visualization.
 
@@ -37,6 +37,8 @@ xunit-timeline/
 ### 1. Add the attribute to a test class
 
 ```csharp
+using Ectobius.XUnit.Timeline;
+
 [Timeline]
 public class MyTests
 {

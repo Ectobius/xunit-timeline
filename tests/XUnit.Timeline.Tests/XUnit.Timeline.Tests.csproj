@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
+    <RootNamespace>Ectobius.XUnit.Timeline.Tests</RootNamespace>
+    <AssemblyName>Ectobius.XUnit.Timeline.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

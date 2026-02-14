@@ -1,7 +1,7 @@
 using System.Reflection;
 using Xunit.Sdk;
 
-namespace XUnit.Timeline
+namespace Ectobius.XUnit.Timeline
 {
     public class TimelineAttribute : BeforeAfterTestAttribute
     {

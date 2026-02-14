@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
-namespace XUnit.Timeline
+namespace Ectobius.XUnit.Timeline
 {
     public static class TimelineCollector
     {
