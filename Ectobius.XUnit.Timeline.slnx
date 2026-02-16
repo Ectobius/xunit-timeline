@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Ectobius.XUnit.Timeline/Ectobius.XUnit.Timeline.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Ectobius.XUnit.Timeline.Tests/Ectobius.XUnit.Timeline.Tests.csproj" />
+  </Folder>
+</Solution>

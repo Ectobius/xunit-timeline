@@ -18,15 +18,15 @@ This gives you a clear timeline of parallel test execution — useful for unders
 
 ```
 xunit-timeline/
-├── XUnit.Timeline.sln
+├── Ectobius.XUnit.Timeline.slnx
 ├── src/
-│   └── XUnit.Timeline/              # Class library (netstandard2.0)
-│       ├── TraceEvent.cs             # Chrome Trace Event data model
-│       ├── TimelineCollector.cs      # Thread-safe static collector
-│       ├── TimelineAttribute.cs      # BeforeAfterTestAttribute
-│       └── TimelineExporter.cs       # JSON file writer
+│   └── Ectobius.XUnit.Timeline/              # Class library (netstandard2.0)
+│       ├── TraceEvent.cs                     # Chrome Trace Event data model
+│       ├── TimelineCollector.cs              # Thread-safe static collector
+│       ├── TimelineAttribute.cs              # BeforeAfterTestAttribute
+│       └── TimelineExporter.cs               # JSON file writer
 └── tests/
-    └── XUnit.Timeline.Tests/         # xUnit test project
+    └── Ectobius.XUnit.Timeline.Tests/        # xUnit test project
         ├── TimelineCollectorTests.cs
         ├── TimelineExporterTests.cs
         └── SampleTests.cs

@@ -4,8 +4,6 @@
     <TargetFramework>net10.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
-    <RootNamespace>Ectobius.XUnit.Timeline.Tests</RootNamespace>
-    <AssemblyName>Ectobius.XUnit.Timeline.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\XUnit.Timeline\XUnit.Timeline.csproj" />
+    <ProjectReference Include="..\..\src\Ectobius.XUnit.Timeline\Ectobius.XUnit.Timeline.csproj" />
   </ItemGroup>
 
 </Project>
