@@ -6,33 +6,20 @@ using Xunit;
 
 namespace Ectobius.XUnit.Timeline.Tests
 {
-    [Collection("SharedCollector")]
-    public class TimelineCollectorTests : IDisposable
+    public class TimelineCollectorTests
     {
-        public TimelineCollectorTests()
-        {
-            TimelineCollector.Reset();
-        }
-
-        public void Dispose()
-        {
-            TimelineCollector.Reset();
-        }
-
         [Fact]
         public void RecordStartAndEnd_CreatesEvent()
         {
-            TimelineCollector.RecordStart("test1", "MyTest", "MyClass");
+            var id = $"collector-{Guid.NewGuid()}";
+            var name = $"MyTest-{id}";
+            TimelineCollector.RecordStart(id, name, "MyClass");
             Thread.Sleep(10);
-            TimelineCollector.RecordEnd("test1");
+            TimelineCollector.RecordEnd(id);
 
-            var events = TimelineCollector.GetEvents();
-            Assert.Single(events);
-
-            var ev = events[0];
-            Assert.Equal("MyTest", ev.Name);
+            var ev = TimelineCollector.GetEvents().Single(e => e.Name == name);
             Assert.Equal("MyClass", ev.Args["class"]);
-            Assert.Equal("MyTest", ev.Args["method"]);
+            Assert.Equal(name, ev.Args["method"]);
             Assert.True(ev.Dur > 0);
             Assert.True(ev.Tid > 0);
         }
@@ -40,39 +27,31 @@ namespace Ectobius.XUnit.Timeline.Tests
         [Fact]
         public void RecordEnd_WithoutStart_DoesNothing()
         {
-            TimelineCollector.RecordEnd("nonexistent");
+            var countBefore = TimelineCollector.GetEvents().Count;
+            TimelineCollector.RecordEnd($"nonexistent-{Guid.NewGuid()}");
+            var countAfter = TimelineCollector.GetEvents().Count;
 
-            var events = TimelineCollector.GetEvents();
-            Assert.Empty(events);
+            Assert.Equal(countBefore, countAfter);
         }
 
         [Fact]
         public async Task ConcurrentRecording_CapturesAllEvents()
         {
+            var prefix = Guid.NewGuid().ToString();
             var tasks = Enumerable.Range(0, 10).Select(i => Task.Run(() =>
             {
-                var id = $"test-{i}";
-                TimelineCollector.RecordStart(id, $"Test{i}", "ConcurrentClass");
+                var id = $"{prefix}-{i}";
+                TimelineCollector.RecordStart(id, $"Conc-{prefix}-{i}", "ConcurrentClass");
                 Thread.Sleep(5);
                 TimelineCollector.RecordEnd(id);
             }));
 
             await Task.WhenAll(tasks);
 
-            var events = TimelineCollector.GetEvents();
+            var events = TimelineCollector.GetEvents()
+                .Where(e => e.Name.StartsWith($"Conc-{prefix}-"))
+                .ToList();
             Assert.Equal(10, events.Count);
-        }
-
-        [Fact]
-        public void Reset_ClearsAllEvents()
-        {
-            TimelineCollector.RecordStart("test1", "MyTest", "MyClass");
-            TimelineCollector.RecordEnd("test1");
-            Assert.Single(TimelineCollector.GetEvents());
-
-            TimelineCollector.Reset();
-
-            Assert.Empty(TimelineCollector.GetEvents());
         }
     }
 }

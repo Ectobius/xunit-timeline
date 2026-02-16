@@ -5,29 +5,35 @@ using Xunit;
 
 namespace Ectobius.XUnit.Timeline.Tests
 {
-    public class SampleTestsFixture : IDisposable
+    internal static class TimelineAutoExport
     {
-        public void Dispose()
+        static TimelineAutoExport()
         {
-            var events = TimelineCollector.GetEvents();
-            if (events.Count > 0)
+            AppDomain.CurrentDomain.ProcessExit += (_, _) =>
             {
-                var path = Path.Combine(
-                    AppContext.BaseDirectory,
-                    "test-timeline.json");
-                TimelineExporter.ExportToFile(path, events);
-            }
+                var events = TimelineCollector.GetEvents();
+                if (events.Count > 0)
+                {
+                    var path = Path.Combine(
+                        AppContext.BaseDirectory,
+                        "test-timeline.json");
+                    TimelineExporter.ExportToFile(path, events);
+                }
+            };
         }
+
+        public static void EnsureRegistered() { }
     }
 
     [Timeline]
-    [Collection("SharedCollector")]
-    public class SampleTests : IClassFixture<SampleTestsFixture>
+    public class SampleSlowTests
     {
+        public SampleSlowTests() => TimelineAutoExport.EnsureRegistered();
+
         [Fact]
-        public async Task FastTest()
+        public async Task SlowTest()
         {
-            await Task.Delay(50);
+            await Task.Delay(300);
             Assert.True(true);
         }
 
@@ -37,11 +43,17 @@ namespace Ectobius.XUnit.Timeline.Tests
             await Task.Delay(150);
             Assert.True(true);
         }
+    }
+
+    [Timeline]
+    public class SampleFastTests
+    {
+        public SampleFastTests() => TimelineAutoExport.EnsureRegistered();
 
         [Fact]
-        public async Task SlowTest()
+        public async Task FastTest()
         {
-            await Task.Delay(300);
+            await Task.Delay(50);
             Assert.True(true);
         }
 
