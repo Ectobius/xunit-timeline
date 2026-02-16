@@ -5,71 +5,70 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
-namespace Ectobius.XUnit.Timeline
+namespace Ectobius.XUnit.Timeline;
+
+public static class TimelineCollector
 {
-    public static class TimelineCollector
+    private static readonly ConcurrentDictionary<string, TestStartInfo> InFlight = new ConcurrentDictionary<string, TestStartInfo>();
+    private static readonly ConcurrentBag<TraceEvent> Completed = new ConcurrentBag<TraceEvent>();
+
+    public static void RecordStart(string testId, string testName, string className)
     {
-        private static readonly ConcurrentDictionary<string, TestStartInfo> InFlight = new ConcurrentDictionary<string, TestStartInfo>();
-        private static readonly ConcurrentBag<TraceEvent> Completed = new ConcurrentBag<TraceEvent>();
-
-        public static void RecordStart(string testId, string testName, string className)
+        var info = new TestStartInfo
         {
-            var info = new TestStartInfo
+            TestName = testName,
+            ClassName = className,
+            ThreadId = Thread.CurrentThread.ManagedThreadId,
+            TimestampUs = GetTimestampUs()
+        };
+        InFlight[testId] = info;
+    }
+
+    public static void RecordEnd(string testId)
+    {
+        var endUs = GetTimestampUs();
+
+        if (!InFlight.TryRemove(testId, out var info))
+            return;
+
+        var traceEvent = new TraceEvent
+        {
+            Name = info.TestName,
+            Ts = info.TimestampUs,
+            Dur = endUs - info.TimestampUs,
+            Tid = info.ThreadId,
+            Args = new Dictionary<string, string>
             {
-                TestName = testName,
-                ClassName = className,
-                ThreadId = Thread.CurrentThread.ManagedThreadId,
-                TimestampUs = GetTimestampUs()
-            };
-            InFlight[testId] = info;
-        }
+                ["class"] = info.ClassName,
+                ["method"] = info.TestName
+            }
+        };
 
-        public static void RecordEnd(string testId)
-        {
-            var endUs = GetTimestampUs();
+        Completed.Add(traceEvent);
+    }
 
-            if (!InFlight.TryRemove(testId, out var info))
-                return;
+    public static IReadOnlyList<TraceEvent> GetEvents()
+    {
+        return Completed.ToArray();
+    }
 
-            var traceEvent = new TraceEvent
-            {
-                Name = info.TestName,
-                Ts = info.TimestampUs,
-                Dur = endUs - info.TimestampUs,
-                Tid = info.ThreadId,
-                Args = new Dictionary<string, string>
-                {
-                    ["class"] = info.ClassName,
-                    ["method"] = info.TestName
-                }
-            };
+    public static void Reset()
+    {
+        InFlight.Clear();
 
-            Completed.Add(traceEvent);
-        }
+        while (Completed.TryTake(out _)) { }
+    }
 
-        public static IReadOnlyList<TraceEvent> GetEvents()
-        {
-            return Completed.ToArray();
-        }
+    private static long GetTimestampUs()
+    {
+        return Stopwatch.GetTimestamp() * 1_000_000 / Stopwatch.Frequency;
+    }
 
-        public static void Reset()
-        {
-            InFlight.Clear();
-
-            while (Completed.TryTake(out _)) { }
-        }
-
-        private static long GetTimestampUs()
-        {
-            return Stopwatch.GetTimestamp() * 1_000_000 / Stopwatch.Frequency;
-        }
-
-        private class TestStartInfo
-        {
-            public string TestName { get; set; }
-            public string ClassName { get; set; }
-            public int ThreadId { get; set; }
-            public long TimestampUs { get; set; }
-        }
+    private class TestStartInfo
+    {
+        public string TestName { get; set; }
+        public string ClassName { get; set; }
+        public int ThreadId { get; set; }
+        public long TimestampUs { get; set; }
     }
 }
